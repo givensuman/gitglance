@@ -8,11 +8,16 @@ import User from '../components/User'
 import Repo from '../components/Repo'
 import Popover from '../components/Popover'
 import Loader from '../components/Loader'
+import LoaderAlt from '../components/LoaderAlt'
 import RateLimit from '../components/RateLimit'
 import Languages from '../components/Languages'
 import Icon from '../components/Icon'
 
-const Profile = () => {
+interface Props {
+    handleError: (value: number) => void
+}
+
+const Profile = ({ handleError }: Props) => {
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -30,7 +35,18 @@ const Profile = () => {
         const getUser = async () => 
             await fetch(`https://api.github.com/users/${id}`)
                 .then(res => res.json())
-                .then(data => setUser(data))
+                .then(data => {
+                    if (data?.message === 'Not Found') {
+                        handleError(404)
+                        navigate('/')
+                        return '404'
+                    } else if (data?.message && data?.message.substring(0, 8) === 'API rate') {
+                        handleError(403)
+                        navigate('/')
+                        return '403'
+                    }
+                    setUser(data)
+                })
         
         const getRepos = async () =>
             await fetch(`https://api.github.com/users/${id}/repos?per_page=100`)
@@ -55,11 +71,20 @@ const Profile = () => {
 
 
         const load = async () => {
+            let validUser
             setLoading(true)
             await getUser()
-            await getRepos()
-            await getRateLimit()
-            await getLanguages()
+                .then(res => {
+                    (res === '404' || res === '403') ? 
+                        validUser = false : 
+                        validUser = true
+                })
+            if (validUser) {
+                handleError(200)
+                await getLanguages()
+                await getRepos()
+                await getRateLimit()
+            }
             setLoading(false)
         }
         
@@ -97,25 +122,28 @@ const Profile = () => {
 
     return (
         <>
-        {loading ? <Loader /> : <>
+        {loading ? <Loader /> : 
+        <React.Suspense fallback={null}>
         <Icon 
             icon={faArrowLeft} 
             css={`
                 height: 50px;
                 cursor: pointer;
                 position: absolute;
-                top: 5px;
-                left: 5px;
+                top: 15px;
+                left: 15px;
             `}
             onClick={() => navigate('/')}
         />
 
-        {Object.keys(rateLimit).length > 0 && <RateLimit data={rateLimit} />}
-
-        {languages.length > 0 && <Languages data={languages} />}
+        {/* {Object.keys(rateLimit).length > 0 && <RateLimit data={rateLimit} />} */}
 
         {Object.keys(user).length > 0 && <User data={user} />}
 
+
+        {languages.length > 0 ? <Languages data={languages} /> :
+        <LoaderAlt />}
+        
         <div className='row center'>
             {repos.length > 0 && repos.sort(sortRepos).map((repo, index) => 
                 <Repo 
@@ -132,7 +160,7 @@ const Profile = () => {
             close={() => setPopover({})}
         />
         }
-        </>}
+        </React.Suspense>}
         </>
     )
 }

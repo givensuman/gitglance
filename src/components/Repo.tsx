@@ -7,7 +7,6 @@ import {
 import theme from '../styles/theme'
 
 import Icon from './Icon'
-import Tooltip from './Tooltip'
 
 interface Props {
     data: {
@@ -28,7 +27,7 @@ const Wrapper = styled.div`
     border-radius: 0.2em;
     margin: 20px;
     cursor: pointer;
-    border: solid 2px ${theme.black};
+    border: solid 3px ${theme.black};
     position: relative;
     background-clip: padding-box;
     transition: border-color 0.2s;
@@ -71,7 +70,7 @@ const Stats = styled.div`
     }
 
     div {
-        margin: 0 5px;
+        margin: 5px 5px 0;
     }
 `
 

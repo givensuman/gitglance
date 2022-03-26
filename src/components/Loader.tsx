@@ -8,8 +8,8 @@ const Image = styled.img`
 `
 
 const Wrapper = styled.div`
-    height: 100vh;
     width: 100%;
+    height: 100vh;
 `
 
 const Loader = () => 

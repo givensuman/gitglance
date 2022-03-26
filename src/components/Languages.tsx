@@ -1,41 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { ArcElement, Tooltip, Legend, Chart } from 'chart.js'
-import { Doughnut } from 'react-chartjs-2';
+import React from 'react'
+import styled from '@emotion/styled'
+import { AnimatePresence as Animate, motion } from 'framer-motion'
+import { Doughnut } from 'react-chartjs-2'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 
-Chart.register(ArcElement, Tooltip, Legend);
+import theme from '../styles/theme'
 
-// export const data = {
-//   labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-//   datasets: [
-//     {
-//       label: '# of Votes',
-//       data: [12, 19, 3, 5, 2, 3],
-//       backgroundColor: [
-//         'rgba(255, 99, 132, 0.2)',
-//         'rgba(54, 162, 235, 0.2)',
-//         'rgba(255, 206, 86, 0.2)',
-//         'rgba(75, 192, 192, 0.2)',
-//         'rgba(153, 102, 255, 0.2)',
-//         'rgba(255, 159, 64, 0.2)',
-//       ],
-//       borderColor: [
-//         'transparent',
-//         'transparent',
-//         'transparent',
-//         'transparent',
-//         'rtransparent',
-//         'transparent',
-//       ],
-//       borderWidth: 1,
-//     },
-//   ],
-// };
-
-// function App() {
-//   return <Doughnut data={data} />;
-// }
-
-// export default App
+import Loader from './Loader'
 
 interface Props {
     data: [{
@@ -45,32 +16,52 @@ interface Props {
     }]
 }
 
+const Wrapper = styled.div`
+    max-width: 300px;
+    width: 100%;
+    margin: 2% auto;
+    transition: height 0.3s;
+`
+
+ChartJS.register(ArcElement, Tooltip, Legend)
+
 const Languages = ({ data }: Props) => {
 
-    const [ doughnutData, setDoughnutData ] = useState<any>({})
-
-    useEffect(() => {
-        if (data && data.length > 0) {
-            const doughnut = {
-                labels: data.map((item: { label: string }) => item.label),
-                datasets: [
-                    {
-                        label: 'Languages',
-                        data: data.map((item: { value: number }) => item.value),
-                        backgroundColor: data.map((item: { color: string }) => item.color),
-                        borderWidth: 0
-                    }
-                ]
-            }
-
-            setDoughnutData(doughnut)
-        }
-    }, [data])
-    
-    useEffect(() => console.log(data), [data])
+    React.useEffect(() => console.log(data), [data])
 
     return (
-        null
+        <Wrapper className='row center'>
+        {data && data.length > 0 &&
+        <Animate>
+        <motion.div 
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 300 }}
+            exit={{ opacity: 0, width: 0 }}
+        >
+
+        <Doughnut 
+            data={{
+                labels: data.map(item => item.label),
+                datasets: [
+                    {
+                        label: 'Favorite languages',
+                        data: data.map(item => item.value),
+                        backgroundColor: data.map(item => item.color),
+                        borderColor: data.map(() => 'transparent'),
+                        borderWidth: 3
+                    },
+                ],
+            }}
+            options={{
+                responsive: true,
+                color: theme.grey
+            }}
+        />
+        
+        </motion.div>
+        </Animate>
+        }
+        </Wrapper>
     )
 }
 

@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import { 
     faGlobe, faCode, faUserGroup, faHeart
 } from '@fortawesome/free-solid-svg-icons'
+import { faGithubAlt, faTwitter } from '@fortawesome/free-brands-svg-icons'
 import { AnimatePresence as Animate, motion } from 'framer-motion'
 
 import github from '../assets/github.svg'
@@ -17,7 +18,7 @@ import Tooltip from './Tooltip'
 interface Props {
     data: {
         avatar_url: string,
-        html_url: URL,
+        html_url: string,
         login: string,
         name: string,
         blog?: string,
@@ -29,7 +30,7 @@ interface Props {
 }
 
 const Wrapper = styled.div`
-    padding: 10% 0;
+    padding: 10% 0 2%;
     position: relative;
     max-width: 800px;
     margin: 0 auto;
@@ -79,7 +80,7 @@ interface BannerProps {
     background: string
 }
 
-const Banner = styled.div<BannerProps>`
+const Banner = styled.a<BannerProps>`
     height: 50px;
     width: 50px;
     background-color: blue;
@@ -97,18 +98,17 @@ const Banner = styled.div<BannerProps>`
     }
 
     img {
-        height: 25px;
-        margin-bottom: 12.5px;
     }
 `
 
 const Stats = styled.div`
-    width: 100%;
+    width: fit-content;
+    max-width: 200px;
     justify-content: space-around;
     margin-top: 10px;
 
     span {
-        margin: 5px 5px 0;
+        margin: 5px 10px 0;
         color: ${theme.grey};
         cursor: default;
         font-weight: bold;
@@ -197,20 +197,32 @@ const User = ({ data }: Props) => {
             <Banner 
                 background={theme.grey}
                 onClick={() => window.open(data.html_url)}
+                href={data.html_url}
             >
-                <img 
-                    src={github}
-                    alt='Github'
+                <Icon 
+                    /* @ts-ignore */
+                    icon={faGithubAlt}
+                    css={`
+                        color: ${theme.black}; 
+                        height: 25px;
+                        margin-bottom: 12.5px;
+                    `}
                 />
             </Banner>
             {data.twitter_username && 
                 <Banner 
                     background={theme.blue}
                     onClick={() => window.open(`https://twitter.com/${data.twitter_username}`)}
+                    href={`https://twitter.com/${data.twitter_username}`}
                 >
-                <img
-                    src={twitter}
-                    alt='Twitter'
+                <Icon
+                    /* @ts-ignore */
+                    icon={faTwitter}
+                    css={`
+                        color: ${theme.white};
+                        height: 25px;
+                        margin-bottom: 12.5px;
+                    `}
                 />
                 </Banner>
             }
@@ -218,13 +230,14 @@ const User = ({ data }: Props) => {
                 <Banner 
                     background={theme.green}
                     onClick={() => window.open(data.blog)}
+                    href={data.blog}
                 >
                     <Icon 
                         icon={faGlobe}
                         css={`
                             height: 25px;
                             margin-bottom: 12.5px;
-                            color: black;
+                            color: ${theme.grey};
                         `}
                     />
                 </Banner>

@@ -15,7 +15,7 @@ const Value = styled.h1`
 const Wrapper = styled.div`
     position: absolute;
     top: 15px;
-    left: 50px;
+    left: 60px;
 `
 
 const RateLimit = ({ data }: Props) => {

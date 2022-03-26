@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import { AnimatePresence as Animate, motion } from 'framer-motion'
 import { 
-    faXmark, faCodeBranch, faCodeFork, faStar, faEye, faCertificate, faFileCode
+    faXmark, faCodeBranch, faCodeFork, faStar, faEye, faCertificate, faFileCode, faArrowUpRightFromSquare
 } from '@fortawesome/free-solid-svg-icons'
+import { faGitAlt } from '@fortawesome/free-brands-svg-icons'
 
 import theme from '../styles/theme'
 
@@ -60,13 +61,14 @@ const Badge = styled.span`
     color: ${theme.black};
     border-radius: 0.2em;
     padding: 0.1em 0.2em;
-    margin: 0.2em 0.2em 0.2em 0;
+    margin: 0.2em 0.2em 1em 0;
+    cursor: default;
 `
 
 const Link = styled.a<ComponentProps>`
     color: ${theme.blue};
     text-decoration: none;
-    margin: 0.5em 0.25em 0.5em 0;
+    margin: 0.2em 0;
     ${props => props.css}
 `
 
@@ -80,7 +82,6 @@ const Popover = ({ data, close }: Props) => {
         let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
 
         setTopOffset(scrollTop)
-        console.log(data)
 
         window.onscroll = () => window.scrollTo(scrollLeft, scrollTop)
 
@@ -89,6 +90,9 @@ const Popover = ({ data, close }: Props) => {
 
     return (
         <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
         >
             <Wrapper 
                 top={topOffset} 
@@ -170,16 +174,26 @@ const Popover = ({ data, close }: Props) => {
                 </div>
 
 
-                <Text css={`margin: 0.5em 0`}>/{data.owner.login}</Text>
+                <Text 
+                    className='code'
+                    css={`margin: 0.5em 0`}
+                >
+                    /{data.owner.login}
+                </Text>
 
                 <Text css={`margin: 5px 0`}>
                     {data.description}
                 </Text>
 
-                <Text css={`margin: 5px 0`}>
+                <Tooltip id='language'>Language</Tooltip>
+                <Text 
+                    css={`margin: 0.5em 0`}
+                    data-tip
+                    data-for='language'
+                >
                     <Icon 
                         icon={faFileCode}
-                        css={`margin-right: 0.25em`}
+                        css={`padding-right: 0.5em`}
                     />
                     {data.language ? data.language : 'Misc'}
                 </Text>
@@ -187,13 +201,13 @@ const Popover = ({ data, close }: Props) => {
                 {data.license && <>
                 <Tooltip id='license'>License</Tooltip>
                 <Text 
-                    css={`margin: 0.5em 0`}
+                    css={`margin-bottom: 0.5em`}
                     data-tip
                     data-for='license'
                 >
                     <Icon 
                         icon={faCertificate} 
-                        css={`margin-right: 0.25em`}
+                        css={`padding-right: 0.5em;`}
                     />
                     {data.license.key.toUpperCase()}
                 </Text>
@@ -207,19 +221,31 @@ const Popover = ({ data, close }: Props) => {
                 </div>
                 }
 
-                <div className='row align-center'>
+                <div className='col align-start'>
                     <Link href={data.html_url}>
+                        <Icon
+                            /* @ts-ignore */
+                            icon={faGitAlt}
+                            css={`
+                                padding-right: 0.5em;
+                            `}
+                        />
                         Repo
                     </Link>
-                    {data.homepage && data.homepage.length > 0 && <>
-                    <span>|</span>
+                    {data.homepage && data.homepage.length > 0 &&
                     <Link 
                         href={data.homepage}
                         css={`margin-left: 0.25em`}
                     >
+                        <Icon
+                            icon={faArrowUpRightFromSquare}
+                            css={`
+                                padding-right: 0.5em;
+                            `}
+                        />
                         Homepage
                     </Link>
-                    </>}
+                    }
                 </div>
 
             </Wrapper>

@@ -19,6 +19,15 @@ const Wrapper = styled.div`
 const Title = styled.h1`
     font-size: 4rem;
     margin: 10px;
+    width: 1000px;
+
+    span {
+        background: linear-gradient(to right,
+            ${theme.pink}, ${theme.orange}, ${theme.green}, ${theme.blue}
+            );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 `
 
 interface SearchbarProps {
@@ -42,6 +51,10 @@ const Searchbar = styled.input<SearchbarProps>`
     }
 `
 
+const Error = styled.h4`
+    margin: 20px auto;
+`
+
 const Pretty = styled.div`
     width: 100%;
     height: 10px;
@@ -52,7 +65,11 @@ const Pretty = styled.div`
     bottom: 0;
 `
 
-const Search = () => {
+interface Props {
+    error: number
+}
+
+const Search = ({ error }: Props) => {
 
     const [ search, setSearch ] = useState('')
     const [ showSubmit, setShowSubmit ] = useState(false)
@@ -74,43 +91,49 @@ const Search = () => {
         <Animate>
         <Wrapper className='col center'>
 
-            <Title>
-                gitglance
+            <Title className='row center'>
+                git<span>glance</span>
             </Title>
-
-            <div 
-                className='row center' 
-                style={{position: 'relative'}}
-                >
-                <Searchbar
-                    type='text'
-                    onChange={handleSearch}
-                    className='code'
-                    spellCheck={false}
-                    active={search.length > 0}
-                />
-                {showSubmit && 
-                <motion.div
-                    initial={{ x: 20 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: 20 }}
-                    style={{ height: '100%' }}
-                    className='flex center'
-                >
-                <Icon 
-                    icon={faAngleRight}
-                    css={`
-                        width: 10%;
-                        margin-left: 10px;
-                        height: 30px;
-                        position: absolute;
-                        right: 0;
-                        color: ${theme.grey};
-                        cursor: pointer;
-                    `} 
-                    onClick={handleSubmit}
-                />
-                </motion.div>
+            <div className='col justify-center'>
+                <div 
+                    className='row center' 
+                    style={{position: 'relative'}}
+                    >
+                    <Searchbar
+                        type='text'
+                        onChange={handleSearch}
+                        className='code'
+                        spellCheck={false}
+                        active={search.length > 0}
+                    />
+                    {showSubmit && 
+                    <motion.div
+                        initial={{ opacity: 0, y: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ height: '100%' }}
+                        className='flex center'
+                    >
+                    <Icon 
+                        icon={faAngleRight}
+                        css={`
+                            width: 10%;
+                            margin-left: 10px;
+                            height: 30px;
+                            position: absolute;
+                            right: 0;
+                            color: ${theme.grey};
+                            cursor: pointer;
+                        `} 
+                        onClick={handleSubmit}
+                    />
+                    </motion.div>
+                    }
+                </div>
+                {
+                error === 404 ? <Error>Can't find a GitHub user with that name.</Error> :
+                error === 403 ? <Error>GitHub has limited the rate of our requests. Try again later!</Error> :
+                null
                 }
             </div>
 
