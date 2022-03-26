@@ -1,0 +1,24 @@
+body::-webkit-scrollbar {
+    width: 3px;
+    cursor: pointer;
+}
+
+body::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #D1D1D1;
+    border-radius: 20%;
+    opacity: 0.3;
+    max-height: 10px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
+    width: 10px;
+}
+
+body::-webkit-scrollbar-button {
+    display: none;
+}

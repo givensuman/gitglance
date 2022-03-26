@@ -1,0 +1,230 @@
+import React, { useEffect, useState } from 'react'
+import styled from '@emotion/styled'
+import { AnimatePresence as Animate, motion } from 'framer-motion'
+import { 
+    faXmark, faCodeBranch, faCodeFork, faStar, faEye, faCertificate, faFileCode
+} from '@fortawesome/free-solid-svg-icons'
+
+import theme from '../styles/theme'
+
+import Icon from './Icon'
+import Tooltip from './Tooltip'
+
+interface Props {
+    close: () => void,
+    data: {
+        html_url: string,
+        name: string,
+        topics: Array<string>,
+        forks_count: number,
+        stargazers_count: number,
+        watchers_count: number,
+        description: string,
+        owner: { login: string },
+        default_branch: string,
+        license: { key: string },
+        homepage: string,
+        language: string
+    }
+}
+
+interface WrapperProps {
+    top: number | null
+}
+
+const Wrapper = styled.div<WrapperProps>`
+    position: absolute;
+    right: 0;
+    top: ${props => props.top ? String(props.top) + 'px' : '0'};
+    height: 100vh;
+    background-color: ${theme.black};
+    color: ${theme.white};
+    max-width: 500px;
+    min-width: 30%;
+    background-color: ${theme.black};
+    padding: 10px 10px 10px 30px;
+`
+
+interface ComponentProps {
+    css?: string
+}
+
+const Text = styled.span<ComponentProps>`
+    color: ${theme.grey};
+    cursor: default;
+    max-width: fit-content;
+    ${props => props.css}
+`
+const Badge = styled.span`
+    background-color: ${theme.grey};
+    color: ${theme.black};
+    border-radius: 0.2em;
+    padding: 0.1em 0.2em;
+    margin: 0.2em 0.2em 0.2em 0;
+`
+
+const Link = styled.a<ComponentProps>`
+    color: ${theme.blue};
+    text-decoration: none;
+    margin: 0.5em 0.25em 0.5em 0;
+    ${props => props.css}
+`
+
+const Popover = ({ data, close }: Props) => {
+
+    const [ topOffset, setTopOffset ] = useState<null | number>(null)
+
+    useEffect((): (() => void) => {
+
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        let scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+
+        setTopOffset(scrollTop)
+        console.log(data)
+
+        window.onscroll = () => window.scrollTo(scrollLeft, scrollTop)
+
+        return () => window.onscroll = () => {}
+    })
+
+    return (
+        <motion.div
+        >
+            <Wrapper 
+                top={topOffset} 
+                className='col justify-start'
+            >
+                <Icon 
+                    icon={faXmark} 
+                    css={`
+                        position: absolute;
+                        top: 10px; left: 10px;
+                        cursor: pointer;
+                        height: 20px;
+                    `}
+                    onClick={close}
+                />
+
+                <Text css={`
+                    font-size: 2rem;
+                    color: ${theme.white};
+                    margin: 30px 0 15px 0;
+                `}>
+                    {data.name}
+                </Text>
+
+                <div className='row'>
+
+                    <Tooltip id='defaultbranch'>Default Branch</Tooltip>
+                    <Text 
+                        css={`margin-right: 0.5em`}
+                        data-tip
+                        data-for='defaultbranch'
+                    >
+                        <Icon 
+                            icon={faCodeBranch}
+                            css={`margin-right: 0.25em`}
+                        />
+                        {data.default_branch}
+                    </Text>
+
+                    <Tooltip id='forks'>Forks</Tooltip>
+                    <Text 
+                        css={`margin-right: 0.5em`}
+                        data-tip
+                        data-for='forks'
+                    >
+                        <Icon 
+                            icon={faCodeFork} 
+                            css={`margin-right: 0.25em`}
+                        />
+                        {data.forks_count}
+                    </Text>
+
+                    <Tooltip id='stars'>Stars</Tooltip>
+                    <Text 
+                        css={`margin-right: 0.5em`}
+                        data-tip
+                        data-for='stars'
+                    >
+                        <Icon 
+                            icon={faStar}
+                            css={`margin-right: 0.25em`}
+                        />
+                        {data.stargazers_count}
+                    </Text>
+
+                    <Tooltip id='watching'>Watching</Tooltip>
+                    <Text 
+                        css={`margin-right: 0.5em`}
+                        data-tip
+                        data-for='watching'
+                    >
+                        <Icon 
+                            icon={faEye}
+                            css={`margin-right: 0.25em`}
+                        />
+                        {data.watchers_count}
+                    </Text>
+
+                </div>
+
+
+                <Text css={`margin: 0.5em 0`}>/{data.owner.login}</Text>
+
+                <Text css={`margin: 5px 0`}>
+                    {data.description}
+                </Text>
+
+                <Text css={`margin: 5px 0`}>
+                    <Icon 
+                        icon={faFileCode}
+                        css={`margin-right: 0.25em`}
+                    />
+                    {data.language ? data.language : 'Misc'}
+                </Text>
+                
+                {data.license && <>
+                <Tooltip id='license'>License</Tooltip>
+                <Text 
+                    css={`margin: 0.5em 0`}
+                    data-tip
+                    data-for='license'
+                >
+                    <Icon 
+                        icon={faCertificate} 
+                        css={`margin-right: 0.25em`}
+                    />
+                    {data.license.key.toUpperCase()}
+                </Text>
+                </>}
+
+                {data.topics && data.topics.length > 0 && 
+                <div className='row'>
+                    {data.topics.map((item, index) => 
+                        <Badge key={index}>{item}</Badge>
+                    )}
+                </div>
+                }
+
+                <div className='row align-center'>
+                    <Link href={data.html_url}>
+                        Repo
+                    </Link>
+                    {data.homepage && data.homepage.length > 0 && <>
+                    <span>|</span>
+                    <Link 
+                        href={data.homepage}
+                        css={`margin-left: 0.25em`}
+                    >
+                        Homepage
+                    </Link>
+                    </>}
+                </div>
+
+            </Wrapper>
+        </motion.div>
+    )
+}
+
+export default Popover

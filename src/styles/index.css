@@ -1,0 +1,14 @@
+@import './flexbox.css';
+@import './font.css';
+@import './scrollbar.css';
+
+body {
+  margin: 0;
+  background-color: #555558;
+  color: #FDF6EC;
+}
+
+.App {
+  overflow-x: hidden;
+  position: relative;
+}
