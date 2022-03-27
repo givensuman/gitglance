@@ -144,7 +144,7 @@ const Profile = ({ handleError }: Props) => {
         {languages.length > 0 ? <Languages data={languages} /> :
         <LoaderAlt />}
         
-        <div className='row center'>
+        <div className='row center' style={{ maxWidth: '1000px', margin: '0 auto' }}>
             {repos.length > 0 && repos.sort(sortRepos).map((repo, index) => 
                 <Repo 
                     key={index} 
